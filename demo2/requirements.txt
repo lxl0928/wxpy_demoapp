@@ -1,0 +1,6 @@
+lxml
+PyYAML
+requests
+beautifulsoup4
+itchat
+apscheduler

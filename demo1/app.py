@@ -17,7 +17,7 @@ def get_message():
     r = get("http://open.iciba.com/dsapi/")
     note = r.json()['note']
     content = r.json()['content']
-    return note,content
+    return note, content
 
 
 # 发送消息给她
@@ -51,6 +51,7 @@ def start_care():
         # 每天定时问候，早上起床，中午吃饭，晚上吃饭，晚上睡觉
         # 获取时间，只获取时和分，对应的位置为倒数第13位到倒数第8位
         now_time = time.ctime()[-13:-8]
+
         if (now_time == say_good_morning):
             # 随机取一句问候语
             message = choice(str_list_good_morning)
@@ -82,7 +83,8 @@ def start_care():
             send_message(message)
             print("提醒女友晚上吃饭:%s" % time.ctime())
 
-        elif (now_time == say_good_dream):
+        #elif (now_time == say_good_dream):
+        else:
 
             # 是否在结尾加上每日学英语
             if(flag_learn_english):
@@ -98,12 +100,8 @@ def start_care():
             send_message(message)
             print("提醒女友晚上睡觉:%s" % time.ctime())
 
-        else:
-
-            send_message("test")
-
-
-
+        # else:
+        #     send_message("test")
 
 
         # 节日问候语
@@ -127,23 +125,13 @@ def start_care():
             print("发送圣诞节祝福:%s" % time.ctime())
 
 
-
         # 生日问候语
         if(festival_month == birthday_month and festival_day == birthday_day and now_time == "00:00"):
             send_message(str_birthday)
             print("发送生日祝福:%s" % time.ctime())
 
-
-
-
-
-
         # 每60秒检测一次
-        time.sleep(60)
-
-
-
-
+        time.sleep(10)
 
 if __name__ == "__main__":
 
