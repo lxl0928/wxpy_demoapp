@@ -229,17 +229,28 @@ class gfweather:
 
             # 空气指数
             aqi = today_weather.get('aqi')
-            aqi = f"空气 : {aqi}"
+            aqi = f"PM2.5 : {aqi}"
+            aqi_int = int(aqi)
+            if aqi_int <= 50:
+                aqi_level = "空气质量: 优"
+            elif aqi_int >50 and aqi_int <= 100:
+                aqi_level = "空气质量: 良"
+            elif aqi_int > 100 and aqi_int <=200:
+                aqi_level = "空气质量: 轻度污染"
+            else:
+                aqi_level = "空气质量: 重度污染(小仙女出门记得带口罩喔, 或者干脆减少出门喔!)"
+
 
             # 在一起，一共多少天了，如果没有设置初始日期，则不用处理
             if start_date:
                 start_datetime = datetime.strptime(start_date, "%Y-%m-%d")
                 day_delta = (datetime.now() - start_datetime).days
-                delta_msg = f'仙女小, 这是我们在一起的第 {day_delta} 天。\n'
+                # delta_msg = f'小仙女, 这是我们在一起的第 {day_delta} 天。\n'
+                delta_msg = f'小仙女, 早安! \n'
             else:
                 delta_msg = ''
 
-            today_msg = f'{today_time}\n{delta_msg}{notice}。\n{temperature}\n{wind}\n{aqi}\n{dictum_msg}{sweet_words if sweet_words else ""}\n'
+            today_msg = f'{today_time}\n{delta_msg}{notice}。\n{temperature}\n{wind}\n{aqi}\n{aqi_level}\n{dictum_msg}{sweet_words if sweet_words else ""}\n'
             return today_msg
 
 
