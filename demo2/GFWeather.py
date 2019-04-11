@@ -229,7 +229,7 @@ class gfweather:
 
             # 空气指数
             aqi = today_weather.get('aqi')
-            aqi = f"PM2.5 : {aqi}"
+            aqi_msg = f"PM2.5 : {aqi}"
             aqi_int = int(aqi)
             if aqi_int <= 50:
                 aqi_level = "空气质量: 优"
@@ -250,7 +250,7 @@ class gfweather:
             else:
                 delta_msg = ''
 
-            today_msg = f'{today_time}\n{delta_msg}{notice}。\n{temperature}\n{wind}\n{aqi}\n{aqi_level}\n{dictum_msg}{sweet_words if sweet_words else ""}\n'
+            today_msg = f'{today_time}\n{delta_msg}{notice}。\n{temperature}\n{wind}\n{aqi_msg}\n{aqi_level}\n{dictum_msg}\n\n{sweet_words if sweet_words else ""}\n'
             return today_msg
 
 
