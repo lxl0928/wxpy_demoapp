@@ -3,6 +3,7 @@
 import yaml
 import time
 from datetime import datetime
+from pprint import pprint
 
 import itchat
 import requests
@@ -11,21 +12,18 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 import city_dict
 
-
 class gfweather:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36",
-    }
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36"}
     dictum_channel_name = {1: 'ONE●一个', 2: '词霸（每日英语）'}
 
     def __init__(self):
         self.girlfriend_list, self.alarm_hour, self.alarm_minute, self.dictum_channel = self.get_init_data()
 
     def get_init_data(self):
-        '''
+        """
         初始化基础数据
         :return:
-        '''
+        """
         with open('_config.yaml', 'r', encoding='utf-8') as f:
             config = yaml.load(f)
 
@@ -80,14 +78,16 @@ class gfweather:
         if online():
             return True
         # 仅仅判断是否在线
+
         if not auto_login:
             return online()
 
         # 登陆，尝试 5 次
         for _ in range(5):
             # 命令行显示登录二维码
-            # itchat.auto_login(enableCmdQR=True)
-            itchat.auto_login()
+            itchat.auto_login(enableCmdQR=2)
+
+            # itchat.auto_login()
             if online():
                 print('登录成功')
                 return True
@@ -96,10 +96,10 @@ class gfweather:
             return False
 
     def run(self):
-        '''
+        """
         主运行入口
         :return:None
-        '''
+        """
         # 自动登录
         if not self.is_online(auto_login=True):
             return
@@ -121,11 +121,11 @@ class gfweather:
         scheduler.start()
 
     def start_today_info(self, is_test=False):
-        '''
+        """
         每日定时开始处理。
         :param is_test: 测试标志，当为True时，不发送微信信息，仅仅获取数据。
         :return:
-        '''
+        """
         print("*" * 50)
         print('获取相关信息...')
 
@@ -183,10 +183,10 @@ class gfweather:
             return None
 
     def get_dictum_info(self):
-        '''
+        """
         获取格言信息（从『一个。one』获取信息 http://wufazhuce.com/）
         :return: str 一句格言或者短语
-        '''
+        """
         print('获取格言信息..')
         user_url = 'http://wufazhuce.com/'
         resp = requests.get(user_url, headers=self.headers)
@@ -196,25 +196,32 @@ class gfweather:
         return every_msg + "\n"
 
     def get_weather_info(self, dictum_msg='', city_code='101041700', start_date='2019-02-01', sweet_words='来自最爱你的我'):
-        '''
+        """
         获取天气信息。网址：https://www.sojson.com/blog/305.html
         :param dictum_msg: 发送给朋友的信息
         :param city_code: 城市对应编码
         :param start_date: 恋爱第一天日期
         :param sweet_words: 来自谁的留言
         :return: 需要发送的话。
-        '''
+        """
         print('获取天气信息..')
         weather_url = f'http://t.weather.sojson.com/api/weather/city/{city_code}'
         resp = requests.get(url=weather_url)
         if resp.status_code == 200 and self.isJson(resp) and resp.json().get('status') == 200:
             weatherJson = resp.json()
             # 今日天气
-            today_weather = weatherJson.get('data').get('forecast')[1]
+
+            today_weather = weatherJson.get('data').get('forecast')[0]
+            tomorrow_weather = weatherJson.get('data').get('forecast')[1]
+
             # 今日日期
             today_time = datetime.now().strftime('%Y{y}%m{m}%d{d} %H:%M:%S').format(y='年', m='月', d='日')
+
             # 今日天气注意事项
-            notice = today_weather.get('notice')
+            notice = "天气提示: {}".format(today_weather.get('notice'))
+
+            pprint(weatherJson)
+
             # 温度
             high = today_weather.get('high')
             high_c = high[high.find(' ') + 1:]
@@ -233,13 +240,12 @@ class gfweather:
             aqi_int = int(aqi)
             if aqi_int <= 50:
                 aqi_level = "空气质量: 优"
-            elif aqi_int >50 and aqi_int <= 100:
+            elif aqi_int > 50 and aqi_int <= 100:
                 aqi_level = "空气质量: 良"
-            elif aqi_int > 100 and aqi_int <=200:
+            elif aqi_int > 100 and aqi_int <= 200:
                 aqi_level = "空气质量: 轻度污染"
             else:
                 aqi_level = "空气质量: 重度污染(小仙女出门记得带口罩喔, 或者干脆减少出门喔!)"
-
 
             # 在一起，一共多少天了，如果没有设置初始日期，则不用处理
             if start_date:
